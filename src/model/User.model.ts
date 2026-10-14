@@ -17,9 +17,10 @@ const MessageSchema: Schema<Message>=new Schema({
     }
 })
 export interface User extends Document{
-    username: string,
+    username?: string,
     email:string,
-    password:string,
+    password?:string,
+    googleId?:string,
     verificationCode?:string,
     isVerified:boolean,
     verificationCodeExpiry?: Date,
@@ -31,9 +32,10 @@ export interface User extends Document{
 const UserSchema: Schema<User>=new Schema({
     username:{
         type:String,
-        required:[true,'username is required'],
+        required:false,
         trim:true,
         unique:true,
+        sparse:true,
         lowercase:true
     },
     email:{
@@ -46,7 +48,11 @@ const UserSchema: Schema<User>=new Schema({
     },
     password:{
         type:String,
-        required:true
+        required:false
+    },
+    googleId:{
+        type:String,
+        sparse:true
     },
     isVerified:{
         type:Boolean

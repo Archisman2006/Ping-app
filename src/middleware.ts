@@ -1,14 +1,32 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt';
-// This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
     const token = await getToken({
         req: request,
         secret: process.env.NEXTAUTH_SECRET 
     });
-    // redirect logged in users to dashboard.
     const url = request.nextUrl;
+
+    // Logged-in user without a username → must finish onboarding
+    if (token && !token.username) {
+        // Allow access to finish-onboarding and API routes
+        if (
+            url.pathname.startsWith('/finish-onboarding') ||
+            url.pathname.startsWith('/api/')
+        ) {
+            return NextResponse.next();
+        }
+        // Redirect everywhere else to finish-onboarding
+        return NextResponse.redirect(new URL('/finish-onboarding', request.url));
+    }
+
+    // Logged-in user with a username trying to access finish-onboarding → dashboard
+    if (token && token.username && url.pathname.startsWith('/finish-onboarding')) {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    // redirect logged in users to dashboard.
     if (
         token &&
         (url.pathname.startsWith('/sign-in') ||
@@ -24,6 +42,11 @@ export async function middleware(request: NextRequest) {
     if (!token && url.pathname.startsWith('/dashboard')) {
         return NextResponse.redirect(new URL('/sign-in', request.url));
     }
+
+    if (!token && url.pathname.startsWith('/finish-onboarding')) {
+        return NextResponse.redirect(new URL('/sign-in', request.url));
+    }
+
     return NextResponse.next();
 }
 
@@ -35,6 +58,7 @@ export const config = {
         '/dashboard/:path*',
         '/verify/:path*',
         '/forgot-password',
-        '/reset-password'
+        '/reset-password',
+        '/finish-onboarding'
     ]
 }

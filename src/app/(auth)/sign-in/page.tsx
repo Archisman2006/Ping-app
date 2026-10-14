@@ -21,6 +21,7 @@ import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signInSchema } from '../../../schema/SignIn.schema';
 import { signIn } from 'next-auth/react';
+import { FcGoogle } from 'react-icons/fc';
 
 export default function SignUpForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,7 +47,7 @@ export default function SignUpForm() {
     if(result?.error){
       toast({
         title:'Login Failed',
-        description:'Invalid Credentials',
+        description:result.error,
         variant:'destructive'
       })
     }
@@ -116,7 +117,7 @@ export default function SignUpForm() {
                 </FormItem>
               )}
             />
-            <Button type='submit' disabled={isSubmitting}>
+            <Button type='submit' disabled={isSubmitting} className="w-full">
               {
                 isSubmitting?(
                   <>
@@ -127,6 +128,23 @@ export default function SignUpForm() {
             </Button>
           </form>
         </Form>
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-gray-500">or continue with</span>
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+          onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+        >
+          <FcGoogle className="h-5 w-5" />
+          Continue with Google
+        </Button>
         <div className="text-center mt-4">
           <p>
             Not a member?{' '}

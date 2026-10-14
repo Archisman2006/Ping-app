@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     const emailResponse = await sendResetPasswordEmail(
       user.email,
-      user.username,
+      user.username || '',
       resetUrl
     );
 
