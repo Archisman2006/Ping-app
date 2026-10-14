@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Ping',
   description: 'Real feedback from real people.',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 interface RootLayoutProps {
